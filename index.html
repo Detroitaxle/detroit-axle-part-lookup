@@ -197,8 +197,7 @@
                 return;
             }
             
-            // Use the part number exactly as entered
-            const partUrl = `https://www.detroitaxle.com/${encodeURIComponent(partNumber)}`;
+  
             
             // Show loading state
             resultDiv.innerHTML = '<div style="text-align: center;"><div class="loading"></div><p>Searching for part...</p></div>';
@@ -224,10 +223,10 @@
                 const imageUrl = htmlDoc.querySelector('img.productView-image--default')?.src || '';
                 
                 // Display results
-                resultDiv.innerHTML = `
+                resultDiv.innerHTML = 
                     <div class="part-info">
                         <dt>Part Number:</dt>
-                        <dd>${partNumber}</dd>
+                        <dd>${cleanPartNumber}</dd>
                         
                         <dt>Part Name:</dt>
                         <dd>${partName}</dd>
@@ -238,16 +237,16 @@
                     
                     <div class="price">Price: ${price}</div>
                     
-                    ${imageUrl ? `<img src="${imageUrl}" alt="${partName}" style="max-width: 100%; border-radius: 8px; margin-bottom: 1rem;">` : ''}
+                    ${imageUrl ? <img src="${imageUrl}" alt="${partName}" style="max-width: 100%; border-radius: 8px; margin-bottom: 1rem;"> : ''}
                     
                     <a href="${partUrl}" class="view-button" target="_blank">View on Detroit Axle</a>
-                `;
+                ;
                 
             } catch (error) {
-                resultDiv.innerHTML = `
-                    <div class="error">Error: Could not find part ${partNumber}</div>
+                resultDiv.innerHTML = 
+                    <div class="error">Error: Could not find part ${cleanPartNumber}</div>
                     <p>Try searching on the <a href="${partUrl}" target="_blank" style="color: var(--primary);">Detroit Axle website</a></p>
-                `;
+                ;
             }
             
             // Reset for next search
