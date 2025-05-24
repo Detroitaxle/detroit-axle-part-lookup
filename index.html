@@ -197,7 +197,9 @@
                 return;
             }
             
-  
+            // Clean the part number (remove spaces, dashes, make uppercase)
+            const cleanPartNumber = partNumber.replace(/[\s]/g, '').toUpperCase();
+            const partUrl = https://www.detroitaxle.com/${encodeURIComponent(cleanPartNumber)};
             
             // Show loading state
             resultDiv.innerHTML = '<div style="text-align: center;"><div class="loading"></div><p>Searching for part...</p></div>';
