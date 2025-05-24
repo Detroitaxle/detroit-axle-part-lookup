@@ -154,7 +154,7 @@
         <h1>Part Number Search</h1>
         
         <div class="input-container">
-            <input type="text" id="partNumber" placeholder="Enter part number (e.g. DA1234)" autofocus>
+            <input type="text" id="partNumber" placeholder="Enter part number (e.g. P-1709)" autofocus>
         </div>
         
         <button onclick="lookupPart()">SEARCH PARTS</button>
@@ -174,7 +174,7 @@
                 return;
             }
             
-            // Clean the part number - only remove spaces and convert to uppercase
+            // Clean the part number - only remove spaces (keep hyphens) and convert to uppercase
             const cleanPartNumber = partNumber.replace(/\s/g, '').toUpperCase();
             const partUrl = `https://www.detroitaxle.com/${cleanPartNumber}`;
             
