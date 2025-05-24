@@ -1,266 +1,76 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Detroit Axle Part Lookup</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Favicon links -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="shortcut icon" href="/favicon.ico">
-    <meta name="theme-color" content="#e31937">
-    
-    <style>
-        :root {
-            --primary: #e31937;
-            --primary-dark: #c0102a;
-            --bg: #121212;
-            --card-bg: #1e1e1e;
-            --text: #f0f0f0;
-            --text-muted: #aaaaaa;
-            --border: #333333;
-            --success: #4caf50;
-            --error: #f44336;
-        }
+<script>
+    async function fetchPartInfo() {
+        const partInput = document.getElementById('partNumber');
+        const partNumber = partInput.value.trim();
+        const resultDiv = document.getElementById('result');
         
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .card {
-            background-color: var(--card-bg);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            box-sizing: border-box;
-        }
-        
-        h1 {
-            color: var(--primary);
-            margin-top: 0;
-            font-size: 1.8rem;
-            text-align: center;
-        }
-        
-        .input-container {
-            margin: 1.5rem 0;
-            position: relative;
-        }
-        
-        #partNumber {
-            padding: 14px;
-            width: 100%;
-            font-size: 1rem;
-            background-color: #2a2a2a;
-            color: var(--text);
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            transition: border-color 0.3s;
-            box-sizing: border-box;
-        }
-        
-        #partNumber:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        
-        button {
-            padding: 14px;
-            width: 100%;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        
-        button:hover {
-            background-color: var(--primary-dark);
-        }
-        
-        #result {
-            margin-top: 1.5rem;
-            padding: 1.5rem;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background-color: #2a2a2a;
-            word-break: break-word;
-        }
-        
-        .part-info {
-            display: grid;
-            grid-template-columns: 120px 1fr;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .part-info dt {
-            font-weight: bold;
-            color: var(--primary);
-        }
-        
-        .part-info dd {
-            margin: 0;
-        }
-        
-        .price {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--success);
-            margin: 1rem 0;
-        }
-        
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: var(--primary);
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .error {
-            color: var(--error);
-        }
-        
-        .logo {
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        .logo span {
-            font-weight: bold;
-            color: var(--primary);
-            font-size: 1.2em;
-        }
-        
-        .view-button {
-            display: inline-block;
-            margin-top: 1rem;
-            padding: 8px 16px;
-            background-color: var(--primary);
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-        
-        .view-button:hover {
-            background-color: var(--primary-dark);
-        }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <div class="logo">
-            <span>DETROIT AXLE</span> PART LOOKUP
-        </div>
-        
-        <h1>Part Number Search</h1>
-        
-        <div class="input-container">
-            <input type="text" id="partNumber" placeholder="Enter part number (e.g. DA1234)" autofocus>
-        </div>
-        
-        <button onclick="fetchPartInfo()">SEARCH PARTS</button>
-        
-        <div id="result"></div>
-    </div>
-
-    <script>
-        async function fetchPartInfo() {
-            const partInput = document.getElementById('partNumber');
-            const partNumber = partInput.value.trim();
-            const resultDiv = document.getElementById('result');
-            
-            if (!partNumber) {
-                resultDiv.innerHTML = '<div class="error">Please enter a part number</div>';
-                partInput.focus();
-                return;
-            }
-            
-            // Clean the part number (remove spaces, dashes, make uppercase)
-            const cleanPartNumber = partNumber.replace(/[\s-]/g, '').toUpperCase();
-            const partUrl = `https://www.detroitaxle.com/${encodeURIComponent(cleanPartNumber)}`;
-            
-            // Show loading state
-            resultDiv.innerHTML = '<div style="text-align: center;"><div class="loading"></div><p>Searching for part...</p></div>';
-            
-            try {
-                // Using a proxy to avoid CORS issues
-                const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(partUrl);
-                const response = await fetch(proxyUrl);
-                const data = await response.json();
-                
-                if (data.status.http_code !== 200) {
-                    throw new Error('Part not found');
-                }
-                
-                // Parse the HTML content
-                const parser = new DOMParser();
-                const htmlDoc = parser.parseFromString(data.contents, 'text/html');
-                
-                // Extract part information
-                const partName = htmlDoc.querySelector('h1.productView-title')?.textContent?.trim() || 'Part not found';
-                const price = htmlDoc.querySelector('div.price-section span.price.price--withoutTax')?.textContent?.trim() || 'Price not available';
-                const description = htmlDoc.querySelector('div.productView-description')?.textContent?.trim() || 'No description available';
-                const imageUrl = htmlDoc.querySelector('img.productView-image--default')?.src || '';
-                
-                // Display results
-                resultDiv.innerHTML = `
-                    <div class="part-info">
-                        <dt>Part Number:</dt>
-                        <dd>${cleanPartNumber}</dd>
-                        
-                        <dt>Part Name:</dt>
-                        <dd>${partName}</dd>
-                        
-                        <dt>Description:</dt>
-                        <dd>${description}</dd>
-                    </div>
-                    
-                    <div class="price">Price: ${price}</div>
-                    
-                    ${imageUrl ? `<img src="${imageUrl}" alt="${partName}" style="max-width: 100%; border-radius: 8px; margin-bottom: 1rem;">` : ''}
-                    
-                    <a href="${partUrl}" class="view-button" target="_blank">View on Detroit Axle</a>
-                `;
-                
-            } catch (error) {
-                resultDiv.innerHTML = `
-                    <div class="error">Error: Could not find part ${cleanPartNumber}</div>
-                    <p>Try searching on the <a href="${partUrl}" target="_blank" style="color: var(--primary);">Detroit Axle website</a></p>
-                `;
-            }
-            
-            // Reset for next search
+        if (!partNumber) {
+            resultDiv.innerHTML = '<div class="error">Please enter a part number</div>';
             partInput.focus();
+            return;
         }
         
-        // Handle Enter key press
-        document.getElementById('partNumber').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                fetchPartInfo();
+        // Use the part number exactly as entered by the user
+        const partUrl = `https://www.detroitaxle.com/${encodeURIComponent(partNumber)}`;
+        
+        // Show loading state
+        resultDiv.innerHTML = '<div style="text-align: center;"><div class="loading"></div><p>Searching for part...</p></div>';
+        
+        try {
+            // Using a proxy to avoid CORS issues
+            const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(partUrl);
+            const response = await fetch(proxyUrl);
+            const data = await response.json();
+            
+            if (data.status.http_code !== 200) {
+                throw new Error('Part not found');
             }
-        });
-    </script>
-</body>
-</html>
+            
+            // Parse the HTML content
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(data.contents, 'text/html');
+            
+            // Extract part information
+            const partName = htmlDoc.querySelector('h1.productView-title')?.textContent?.trim() || 'Part not found';
+            const price = htmlDoc.querySelector('div.price-section span.price.price--withoutTax')?.textContent?.trim() || 'Price not available';
+            const description = htmlDoc.querySelector('div.productView-description')?.textContent?.trim() || 'No description available';
+            const imageUrl = htmlDoc.querySelector('img.productView-image--default')?.src || '';
+            
+            // Display results
+            resultDiv.innerHTML = `
+                <div class="part-info">
+                    <dt>Part Number:</dt>
+                    <dd>${partNumber}</dd>
+                    
+                    <dt>Part Name:</dt>
+                    <dd>${partName}</dd>
+                    
+                    <dt>Description:</dt>
+                    <dd>${description}</dd>
+                </div>
+                
+                <div class="price">Price: ${price}</div>
+                
+                ${imageUrl ? `<img src="${imageUrl}" alt="${partName}" style="max-width: 100%; border-radius: 8px; margin-bottom: 1rem;">` : ''}
+                
+                <a href="${partUrl}" class="view-button" target="_blank">View on Detroit Axle</a>
+            `;
+            
+        } catch (error) {
+            resultDiv.innerHTML = `
+                <div class="error">Error: Could not find part "${partNumber}"</div>
+                <p>Try searching on the <a href="${partUrl}" target="_blank" style="color: var(--primary);">Detroit Axle website</a></p>
+            `;
+        }
+        
+        // Reset for next search
+        partInput.focus();
+    }
+
+    // Handle Enter key press
+    document.getElementById('partNumber').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            fetchPartInfo();
+        }
+    });
+</script>
