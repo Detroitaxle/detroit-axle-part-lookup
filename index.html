@@ -1,14 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Detroit Axle Part Lookup</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Favicon links -->
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="shortcut icon" href="favicon.ico">
-    <meta name="theme-color" content="#e31937">
-    
+    <title>Detroit Axle Part Lookup</title>
+    <link rel="icon" type="image/png" href="favicon.ico">
     <style>
         :root {
             --primary: #e31937;
@@ -16,149 +12,136 @@
             --bg: #121212;
             --card-bg: #1e1e1e;
             --text: #f0f0f0;
-            --text-muted: #aaaaaa;
-            --border: #333333;
-            --success: #4caf50;
-            --error: #f44336;
+            --text-muted: #aaa;
+            --border: #333;
+            --highlight: rgba(227, 25, 55, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
         }
         
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: var(--bg);
+            background: var(--bg);
             color: var(--text);
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            display: grid;
+            place-items: center;
+            padding: 1rem;
+            line-height: 1.5;
         }
         
         .card {
-            background-color: var(--card-bg);
+            background: var(--card-bg);
+            border-radius: 0.75rem;
             padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             width: 100%;
-            box-sizing: border-box;
+            max-width: 28rem;
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        
+        .logo span {
+            color: var(--primary);
         }
         
         h1 {
             color: var(--primary);
-            margin-top: 0;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             text-align: center;
+            margin-bottom: 1.5rem;
         }
         
-        .input-container {
-            margin: 1.5rem 0;
-            position: relative;
-        }
-        
-        #partNumber {
-            padding: 14px;
+        input {
             width: 100%;
-            font-size: 1rem;
-            background-color: #2a2a2a;
+            padding: 0.875rem;
+            background: #2a2a2a;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
             color: var(--text);
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            transition: border-color 0.3s;
-            box-sizing: border-box;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            transition: border 0.2s;
         }
         
-        #partNumber:focus {
+        input:focus {
             outline: none;
             border-color: var(--primary);
         }
         
         button {
-            padding: 14px;
             width: 100%;
-            background-color: var(--primary);
+            padding: 0.875rem;
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 0.5rem;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background 0.2s;
         }
         
         button:hover {
-            background-color: var(--primary-dark);
+            background: var(--primary-dark);
         }
         
         #result {
             margin-top: 1.5rem;
-            padding: 1.5rem;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background-color: #2a2a2a;
-            word-break: break-word;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background: #2a2a2a;
+            text-align: center;
         }
         
         .loading {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 0.1875rem solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             border-top-color: var(--primary);
-            animation: spin 1s ease-in-out infinite;
+            animation: spin 1s linear infinite;
         }
         
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
         
-        .error {
-            color: var(--error);
-        }
-        
-        .logo {
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        .logo span {
-            font-weight: bold;
-            color: var(--primary);
-            font-size: 1.2em;
-        }
-        
-        .view-button {
+        .link {
             display: inline-block;
-            margin-top: 1rem;
-            padding: 8px 16px;
-            background-color: var(--primary);
-            color: white;
+            margin-top: 0.75rem;
+            color: var(--primary);
             text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.2s;
+            font-weight: 500;
         }
         
-        .view-button:hover {
-            background-color: var(--primary-dark);
+        .link:hover {
+            text-decoration: underline;
+            background-color: var(--highlight);
+        }
+        
+        /* Simple highlight hover effects */
+        button:hover, input:hover {
+            background-color: var(--highlight);
         }
     </style>
 </head>
 <body>
     <div class="card">
-        <div class="logo">
-            <span>DETROIT AXLE</span> PART LOOKUP
-        </div>
-        
+        <div class="logo"><span>DETROIT AXLE</span> PART LOOKUP</div>
         <h1>Part Number Search</h1>
-        
-        <div class="input-container">
-            <input type="text" id="partNumber" placeholder="Enter part number (e.g. P-1709)" autofocus>
-        </div>
-        
+        <input type="text" id="partNumber" placeholder="Enter part number (e.g. P-1709)" autofocus>
         <button onclick="lookupPart()">SEARCH PARTS</button>
-        
         <div id="result"></div>
     </div>
 
@@ -169,35 +152,42 @@
             const resultDiv = document.getElementById('result');
             
             if (!partNumber) {
-                resultDiv.innerHTML = '<div class="error">Please enter a part number</div>';
+                resultDiv.innerHTML = '<p style="color: var(--primary)">Please enter a part number</p>';
                 partInput.focus();
                 return;
             }
             
-            // Clean the part number - only remove spaces (keep hyphens) and convert to uppercase
             const cleanPartNumber = partNumber.replace(/\s/g, '').toUpperCase();
             const partUrl = `https://www.detroitaxle.com/${cleanPartNumber}`;
             
-            // Show loading state briefly
-            resultDiv.innerHTML = '<div style="text-align: center;"><div class="loading"></div><p>Preparing part lookup...</p></div>';
+            resultDiv.innerHTML = '<div><div class="loading"></div><p>Preparing part lookup...</p></div>';
             
-            // After a brief delay, open the URL in a new tab
             setTimeout(() => {
-                window.open(partUrl, '_blank');
+                // Open in new tab as the last tab
+                const newWindow = window.open('', '_blank');
+                newWindow.location.href = partUrl;
+                
                 resultDiv.innerHTML = `
-                    <p>Opening part <strong>${cleanPartNumber}</strong> in a new tab...</p>
-                    <p>If the page didn't open, <a href="${partUrl}" target="_blank" class="view-button">click here</a></p>
+                    <p>Opening part <strong>${cleanPartNumber}</strong></p>
+                    <a href="${partUrl}" target="_blank" class="link">Click here if page didn't open</a>
                 `;
-            }, 500);
+            }, 300);
             
-            // Reset for next search
             partInput.focus();
         }
         
-        // Handle Enter key press
-        document.getElementById('partNumber').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                lookupPart();
+        const partInput = document.getElementById('partNumber');
+        
+        // Handle Enter key to search
+        partInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') lookupPart();
+        });
+        
+        // Handle Escape key to clear
+        partInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                partInput.value = '';
+                partInput.focus();
             }
         });
     </script>
