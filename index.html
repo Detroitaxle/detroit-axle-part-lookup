@@ -28,10 +28,16 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            display: grid;
-            place-items: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 1rem;
             line-height: 1.5;
+        }
+        
+        .main-container {
+            width: 100%;
+            max-width: 28rem;
         }
         
         .card {
@@ -39,8 +45,8 @@
             border-radius: 0.75rem;
             padding: 2rem;
             width: 100%;
-            max-width: 28rem;
             box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+            margin-bottom: 1.5rem;
         }
         
         .logo {
@@ -125,27 +131,83 @@
             font-weight: 500;
         }
         
-        .link:hover {
-            text-decoration: underline;
+        /* Simple highlight hover effects */
+        button:hover, input:hover, .history-card:hover {
             background-color: var(--highlight);
         }
         
-        /* Simple highlight hover effects */
-        button:hover, input:hover {
+        .history-container {
+            width: 100%;
+            max-width: 28rem;
+            margin-top: 1rem;
+        }
+        
+        .history-title {
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .history-card {
+            background: var(--card-bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-card:hover {
             background-color: var(--highlight);
+        }
+        
+        .history-part {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .history-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .clear-history {
+            color: var(--text-muted);
+            text-align: right;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+        
+        .clear-history:hover {
+            color: var(--primary);
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="logo"><span>DETROIT AXLE</span> PART LOOKUP</div>
-        <h1>Part Number Search</h1>
-        <input type="text" id="partNumber" placeholder="Enter part number (e.g. P-1709)" autofocus>
-        <button onclick="lookupPart()">SEARCH PARTS</button>
-        <div id="result"></div>
+    <div class="main-container">
+        <div class="card">
+            <div class="logo"><span>DETROIT AXLE</span> PART LOOKUP</div>
+            <h1>Part Number Search</h1>
+            <input type="text" id="partNumber" placeholder="Enter part number (e.g. P-1709)" autofocus>
+            <button onclick="lookupPart()">SEARCH PARTS</button>
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <div class="history-container">
+        <div class="history-title">RECENT SEARCHES</div>
+        <div id="historyList"></div>
+        <div class="clear-history" onclick="clearHistory()">Clear History</div>
     </div>
 
     <script>
+        let searchHistory = JSON.parse(localStorage.getItem('detroitAxleSearchHistory')) || [];
+        
         function lookupPart() {
             const partInput = document.getElementById('partNumber');
             const partNumber = partInput.value.trim();
@@ -159,6 +221,9 @@
             
             const cleanPartNumber = partNumber.replace(/\s/g, '').toUpperCase();
             const partUrl = `https://www.detroitaxle.com/${cleanPartNumber}`;
+            
+            // Add to search history
+            addToHistory(cleanPartNumber);
             
             resultDiv.innerHTML = '<div><div class="loading"></div><p>Preparing part lookup...</p></div>';
             
@@ -176,6 +241,51 @@
             partInput.focus();
         }
         
+        function addToHistory(partNumber) {
+            const timestamp = new Date().toLocaleTimeString();
+            searchHistory.unshift({ partNumber, timestamp });
+            
+            // Keep only the last 10 searches
+            if (searchHistory.length > 10) {
+                searchHistory = searchHistory.slice(0, 10);
+            }
+            
+            localStorage.setItem('detroitAxleSearchHistory', JSON.stringify(searchHistory));
+            renderHistory();
+        }
+        
+        function renderHistory() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            
+            if (searchHistory.length === 0) {
+                historyList.innerHTML = '<div class="history-card">No recent searches</div>';
+                return;
+            }
+            
+            searchHistory.forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-card';
+                historyItem.innerHTML = `
+                    <span class="history-part">${item.partNumber}</span>
+                    <span class="history-time">${item.timestamp}</span>
+                `;
+                
+                historyItem.addEventListener('click', () => {
+                    document.getElementById('partNumber').value = item.partNumber;
+                    document.getElementById('partNumber').focus();
+                });
+                
+                historyList.appendChild(historyItem);
+            });
+        }
+        
+        function clearHistory() {
+            searchHistory = [];
+            localStorage.removeItem('detroitAxleSearchHistory');
+            renderHistory();
+        }
+        
         const partInput = document.getElementById('partNumber');
         
         // Handle Enter key to search
@@ -190,6 +300,9 @@
                 partInput.focus();
             }
         });
+        
+        // Initialize history on load
+        renderHistory();
     </script>
 </body>
 </html>
