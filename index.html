@@ -220,10 +220,15 @@
             }
             
             const cleanPartNumber = partNumber.replace(/\s/g, '').toUpperCase();
-            const partUrl = `https://www.detroitaxle.com/${cleanPartNumber}`;
+            openPartPage(cleanPartNumber);
             
             // Add to search history
             addToHistory(cleanPartNumber);
+        }
+        
+        function openPartPage(partNumber) {
+            const partUrl = `https://www.detroitaxle.com/${partNumber}`;
+            const resultDiv = document.getElementById('result');
             
             resultDiv.innerHTML = '<div><div class="loading"></div><p>Preparing part lookup...</p></div>';
             
@@ -233,12 +238,12 @@
                 newWindow.location.href = partUrl;
                 
                 resultDiv.innerHTML = `
-                    <p>Opening part <strong>${cleanPartNumber}</strong></p>
+                    <p>Opening part <strong>${partNumber}</strong></p>
                     <a href="${partUrl}" target="_blank" class="link">Click here if page didn't open</a>
                 `;
             }, 300);
             
-            partInput.focus();
+            document.getElementById('partNumber').focus();
         }
         
         function addToHistory(partNumber) {
@@ -272,8 +277,7 @@
                 `;
                 
                 historyItem.addEventListener('click', () => {
-                    document.getElementById('partNumber').value = item.partNumber;
-                    document.getElementById('partNumber').focus();
+                    openPartPage(item.partNumber);
                 });
                 
                 historyList.appendChild(historyItem);
